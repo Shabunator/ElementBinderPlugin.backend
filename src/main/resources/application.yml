@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: element-binder
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/element_binder_db
+    username: postgres
+    password: postgres
+    hikari:
+      schema: element_binder_schema
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS element_binder_schema
+      connection-timeout: 10000
+
+  liquibase:
+    default-schema: element_binder_schema
+    change-log: classpath:db/changelog/db.changelog-master.yaml

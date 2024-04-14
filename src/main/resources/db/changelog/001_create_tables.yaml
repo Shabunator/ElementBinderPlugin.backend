@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Shabunin_Evgenii
+      changes:
+        - createSequence:
+            sequenceName: element_sequence
+            incrementBy: 1
+            startValue: 1
+
+  - changeSet:
+      id: 2
+      author: Shabunin_Evgenii
+      changes:
+        - createTable:
+            tableName: elements
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: article
+                  type: varchar(255)
+              - column:
+                  name: size
+                  type: varchar(255)
+              - column:
+                  name: material_name
+                  type: varchar(255)
+              - column:
+                  name: price
+                  type: double precision
+              - column:
+                  name: create_date
+                  type: timestamp
+                  constraints:
+                    nullable: false

@@ -1,0 +1,18 @@
+version: '3.9'
+name: binder-plugin-backend
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres:15.6
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=element_binder_db
+    networks:
+      - binder_plugin
+
+networks:
+  binder_plugin:
