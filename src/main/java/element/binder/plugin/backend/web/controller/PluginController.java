@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "PluginControllerApi", description = "API для работы с бэкендом")
+@Tag(name = "PluginControllerApi", description = "API для работы с элементами веб-страницы")
 public interface PluginController {
 
     @Operation(summary = "Сохранение элемента")
