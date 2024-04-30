@@ -15,11 +15,11 @@ public interface ElementMapper {
     ElementsResponse elementToElementResponse(Element element);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createDate", ignore = true)
     @Mapping(source = "name", target = "name")
     @Mapping(source = "article", target = "article")
     @Mapping(source = "size", target = "size")
     @Mapping(source = "materialName", target = "materialName")
     @Mapping(source = "price", target = "price")
+    @Mapping(target = "createDate", ignore = true)
     Element elementRequestToElement(ElementRequest request);
 }
