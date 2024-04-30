@@ -15,6 +15,7 @@ import java.util.List;
 @Service
 public class PdfService {
 
+    @SuppressWarnings("MagicNumber")
     public byte[] generatePdf(List<Element> elements) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(byteArrayOutputStream);

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 1
+      id: addSequence
       author: Shabunin_Evgenii
       changes:
         - createSequence:
@@ -9,7 +9,7 @@ databaseChangeLog:
             startValue: 1
 
   - changeSet:
-      id: 2
+      id: createTableElements
       author: Shabunin_Evgenii
       changes:
         - createTable:

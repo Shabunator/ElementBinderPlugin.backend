@@ -1,0 +1,323 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<module name="Checker">
+
+    <!-- Проверяет наличие длинных исходных файлов. -->
+    <module name="FileLength">
+        <property name="max" value="1500"/>
+    </module>
+
+    <!-- Проверяет наличие длинных строк в java файлах. -->
+    <!-- Игнорируются строки - javadoc. -->
+    <module name="LineLength">
+        <property name="max" value="170"/>
+        <property name="ignorePattern" value="^ *\* *[^ ]+$|^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+
+    <module name="SuppressWarningsFilter"/>
+
+    <module name="TreeWalker">
+
+        <module name="SuppressWarningsHolder"/>
+
+        <module name="SuppressWarnings">
+            <property name="id" value="checkstyle:suppresswarnings"/>
+        </module>
+
+        <module name="SuppressWithNearbyCommentFilter"/>
+
+        <!-- ##################################################### ANNOTATIONS ############################################################################ -->
+        <!-- Расположение аннотаций относительно целевого элемента. -->
+        <module name="AnnotationLocation">
+            <!-- Разрешить размещение аннотаций на той же строке, что и целевой элемент. -->
+            <property name="allowSamelineMultipleAnnotations" value="false"/>
+            <!-- Разрешить размещение одной аннотации без параметров в той же строке, что и целевой элемент. -->
+            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+            <!-- Разрешить размещение одной и только параметризованной аннотации в той же строке, что и целевой элемент.  -->
+            <property name="allowSamelineParameterizedAnnotation" value="false"/>
+        </module>
+
+        <!-- ##################################################### BLOCK CHECKS ############################################################################ -->
+        <!-- Находит вложенные блоки {...} (блоки, которые свободно используются в коде без необходимости). -->
+        <module name="AvoidNestedBlocks"/>
+
+        <!-- Проверяет наличие пустых блоков(google code style). -->
+        <module name="EmptyBlock">
+            <property name="option" value="text"/>
+            <property name="tokens"
+                      value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+        </module>
+
+        <!-- Проверяет наличие пустых блоков в конструкции перехвата исключений catch(google code style). -->
+        <!-- В случае если исключение не обрабатывается должным образом необходимо либо указать коментарий в блоке catch либо переименовать исключение в expected -->
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected"/>
+        </module>
+
+        <!-- Проверяет размещение левых фигурных скобок ('{') для блоков кода. -->
+        <!-- Фигурная скобока ('{') на той же строке, что и обьявление(google code style). -->
+        <module name="LeftCurly">
+            <property name="tokens"
+                      value="ANNOTATION_DEF, CLASS_DEF, CTOR_DEF, ENUM_CONSTANT_DEF, ENUM_DEF,
+                    INTERFACE_DEF, LAMBDA, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT,
+                    LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF,
+                    LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF,
+                    OBJBLOCK, STATIC_INIT, RECORD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+
+        <!-- Проверяет фигурные скобки вокруг блоков кода(google code style). -->
+        <module name="NeedBraces">
+            <property name="tokens"
+                      value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_IF, LITERAL_WHILE"/>
+        </module>
+
+        <!-- Проверяет размещение правых фигурных скобок ('}') для блоков кода(google code style).-->
+        <module name="RightCurly">
+            <property name="id" value="RightCurlySame"/>
+            <property name="tokens"
+                      value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE,
+                    LITERAL_DO"/>
+        </module>
+
+        <!-- Проверяет размещение правых фигурных скобок ('}') для блоков кода(google code style).-->
+        <module name="RightCurly">
+            <property name="id" value="RightCurlyAlone"/>
+            <property name="option" value="alone"/>
+            <property name="tokens"
+                      value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT,
+                    INSTANCE_INIT, ANNOTATION_DEF, ENUM_DEF, INTERFACE_DEF, RECORD_DEF,
+                    COMPACT_CTOR_DEF"/>
+        </module>
+
+        <!-- ##################################################### WHITESPACES ############################################################################ -->
+        <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+        <module name="GenericWhitespace"/>
+        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAfter"/>
+        <module name="OneStatementPerLine"/>
+        <module name="ParenPad"/>
+        <module name="SingleSpaceSeparator"/>
+
+        <!-- ##################################################### CLASS DESIGN ############################################################################ -->
+        <!-- Проверяет, что класс, имеющий только закрытые конструкторы, объявлен окончательным. -->
+        <!-- Не проверяет классы, вложенные в интерфейсы или аннотации, так как они там всегда окончательные. -->
+        <module name="FinalClass"/>
+
+        <!-- Проверяет, что каждый класс верхнего уровня, интерфейс, перечисление или аннотация находятся в собственном исходном файле. -->
+        <module name="OneTopLevelClass"/>
+
+        <!-- ##################################################### CODING ################################################################################# -->
+
+        <!-- Проверяет наличие вызова конструктора суперкласса без аргументов. -->
+        <!-- Такой вызов является избыточным, поскольку тело конструктора неявно начинается с вызова конструктора суперкласса super() -->
+        <module name="AvoidNoArgumentSuperConstructorCall"/>
+
+        <!-- Проверяет, чтобы части объявления класса, записи или интерфейса отображались в порядке, предложенном кодовыми соглашениями для языка программирования Java. -->
+        <!-- Порядок по конвенции: -->
+        <!-- 1. Переменные класса (статические). Сначала общедоступные переменные класса, затем защищенные, затем уровень пакета (без модификатора доступа), а затем частные. -->
+        <!-- 2. Переменные экземпляра. Сначала общедоступные переменные класса, затем защищенные, затем уровень пакета (без модификатора доступа), а затем частные. -->
+        <!-- 3. Конструкторы -->
+        <!-- 4. Методы -->
+        <module name="DeclarationOrder">
+            <property name="ignoreModifiers" value="true"/>
+        </module>
+
+        <!-- Проверяет, что значение по умолчанию после всех случаев в операторе switch. -->
+        <module name="DefaultComesLast"/>
+
+        <!-- Обнаруживает пустые операторы (отдельная точка с запятой ";"). -->
+        <module name="EmptyStatement"/>
+
+        <!-- Проверяет, что любая комбинация строковых литералов находится в левой части сравнения equals(). -->
+        <module name="EqualsAvoidNull"/>
+
+        <!-- Проверяет, что если был переопределен equals() или hashcode() то было переопределено оба метода. -->
+        <module name="EqualsHashCode"/>
+
+        <!-- Проверяет, не инициализирован ли какой-либо член класса или объекта явно значением по умолчанию для его значения типа  -->
+        <!-- null для ссылок на объекты, ноль для числовых типов и char и false для логического значения. -->
+        <module name="ExplicitInitialization"/>
+
+        <!-- Проверяет, не затеняет ли локальная переменная или параметр поле, определенное в том же классе.  -->
+        <module name="HiddenField">
+            <property name="tokens" value="VARIABLE_DEF"/>
+        </module>
+
+        <!-- Проверяет наличие запрещенных конструкций. По умолчанию метки запрещены(outer: ). -->
+        <module name="IllegalToken">
+            <property name="tokens" value="LABELED_STAT"/>
+        </module>
+
+        <!-- Проверяет указанный текст токенов на соответствие недопустимому шаблону. По умолчанию токены не указаны. -->
+        <!-- Запрещает задавать переменные int и long как int i = 010 или i = 010l(ноль перед основным значением) -->
+        <module name="IllegalTokenText">
+            <property name="tokens" value="NUM_INT,NUM_LONG"/>
+            <property name="format" value="^0[^lx]"/>
+            <property name="ignoreCase" value="true"/>
+        </module>
+
+        <!-- Проверяет как присваиваются значения переменным. -->
+        <!--  Значение переменным не должны присваиваться при передаче аргумента в метод, это действие должно быть произведено заранее в отдельной строке. -->
+        <module name="InnerAssignment"/>
+
+        <!-- Проверяет отсутствие «магических чисел», где магическое число является числовым литералом, не определенным как константа. -->
+        <module name="MagicNumber">
+            <property name="ignoreFieldDeclaration" value="true"/>
+            <property name="ignoreAnnotation" value="true"/>
+            <property name="ignoreAnnotationElementDefaults" value="true"/>
+            <property name="constantWaiverParentToken" value="ASSIGN, ARRAY_INIT,EXPR, UNARY_PLUS, UNARY_MINUS, TYPECAST, ELIST, DIV, PLUS "/>
+            <property name="ignoreHashCodeMethod" value="true"/>
+        </module>
+
+        <!-- Проверяет, что оператор switch имеет объявление default. -->
+        <module name="MissingSwitchDefault"/>
+
+        <!-- Проверяет, что каждое объявление переменной находится в своем собственном выражении и в своей строке. -->
+        <module name="MultipleVariableDeclarations"/>
+
+        <!-- Ограничивает вложенность блоков try заданной глубиной. -->
+        <module name="NestedTryDepth">
+            <property name="max" value="1"/>
+        </module>
+
+        <!-- Проверяет, что при обьявлении массивов после последнего элемента массива не проставлена запятая -->
+        <module name="NoArrayTrailingComma"/>
+
+        <!-- Проверяет, что при обьявлении перечислений(Enum) после последнего элемента перечисления не проставлена запятая. Должна быть ; или пусто -->
+        <module name="NoEnumTrailingComma"/>
+
+        <!-- Проверяет, что нет метода finalize с нулевыми параметрами(google code style). -->
+        <module name="NoFinalizer"/>
+
+        <!-- Проверяет наличие только одного оператора в строке. -->
+        <module name="OneStatementPerLine">
+            <property name="treatTryResourcesAsStatement" value="true"/>
+        </module>
+
+        <!-- Проверяет, сгруппированы ли перегруженные методы(google code style). -->
+        <!-- Перегруженные методы имеют одно и то же имя, но разные сигнатуры, где сигнатура может отличаться количеством входных параметров или типом входных параметров, или тем и другим. -->
+        <module name="OverloadMethodsDeclarationOrder"/>
+
+        <!-- Проверяет наличие у класса объявления пакета и (необязательно) соответствие имени пакета имени каталога для исходного файла. -->
+        <module name="PackageDeclaration"/>
+
+        <!-- Проверяет, что ссылки на переменные экземпляра и методы текущего объекта явно имеют форму «this.varName» или «this.methodName(args)» -->
+        <module name="RequireThis"/>
+
+        <!-- Проверяет наличие слишком сложных логических операторов возврата. Например следующий код -->
+        <!-- if (valid())              -->
+        <!-- 		return false;      -->
+        <!-- 	else                   -->
+        <!-- 		return true;       -->
+        <module name="SimplifyBooleanReturn"/>
+
+        <!-- Проверяет, что строковые литералы не используются с == или !=. Поскольку == будет сравнивать ссылки на объекты, а не фактическое значение строк. -->
+        <!-- Следует использовать String.equals(). -->
+        <module name="StringLiteralEquality"/>
+
+        <!-- Проверяет, используются ли ненужные скобки в операторе или выражении. -->
+        <module name="UnnecessaryParentheses"/>
+
+        <!-- Проверяет, не используется ли ненужная точка с запятой после объявления типа. -->
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+
+        <!-- Проверяет, не используется ли ненужная точка с запятой после объявления члена типа. -->
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+
+        <!-- Проверяет наличие ненужной точки с запятой в определениях перечисления. Точка с запятой не нужна, если тело перечисления содержит только константы перечисления. -->
+        <module name="UnnecessarySemicolonInEnumeration"/>
+
+        <!-- Проверяет, используется ли ненужная точка с запятой в последнем объявлении ресурса конструкции TryWithResources.  -->
+        <module name="UnnecessarySemicolonInTryWithResources"/>
+
+        <!-- Проверяет расстояние между объявлением переменной и ее первым использованием(google code style). -->
+        <!-- Примечание. Операторы объявления/инициализации переменных не учитываются при расчете длины. -->
+        <module name="VariableDeclarationUsageDistance"/>
+
+        <!-- ##################################################### IMPORTS ############################################################################### -->
+
+        <!-- Проверяет отсутствие операторов импорта, использующих обозначение *(google code style). -->
+        <module name="AvoidStarImport">
+            <!-- Можно задать исключения -->
+            <!-- <property name="excludes" value="java.io,java.net,java.lang.Math"/> -->
+        </module>
+
+        <!--Проверяет наличие неиспользуемых операторов импорта. -->
+        <module name="UnusedImports"/>
+
+        <!-- ##################################################### JAVA DOC ############################################################################### -->
+
+        <!-- Проверяет порядок блочных тегов javadoc или тегов javadoc -->
+        <module name="AtclauseOrder">
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
+            <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
+        </module>
+
+        <!-- Проверяет, что документы Javadoc расположены в правильном месте. -->
+        <module name="InvalidJavadocPosition"/>
+
+        <!-- Проверяет, что описание в Javadoc реализовано после пробела после *. -->
+        <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+
+        <!-- Проверяет одну пустую строку перед блоком тегов.  -->
+        <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+
+        <!-- Комментарий Javadoc, содержащий хотя бы один блочный тег, должен состоять из нескольких строк.  -->
+        <module name="SingleLineJavadoc"/>
+
+        <!-- ##################################################### OTHER ############################################################################### -->
+        <!-- Проверяет стиль определений типов массивов. int[] nums - OK -->
+        <module name="ArrayTypeStyle"/>
+
+        <!-- Коментарии должны начинаться с одним и тем же отступом -->
+        <module name="CommentsIndentation">
+            <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
+        </module>
+
+        <!-- Проверяет соответствие имени внешнего типа и имени файла. -->
+        <module name="OuterTypeFilename"/>
+
+        <!-- Проверяет, что long значения определенны с L в конце, в не l. Это соответствует Java Language Specification -->
+        <module name="UpperEll"/>
+
+        <!-- ##################################################### NAMING CONVENTIONS ############################################################################### -->
+
+        <!-- Проверяет, что long значения определенны с L в конце, в не l. Это соответствует Java Language Specification -->
+        <module name="AbbreviationAsWordInName">
+            <property name="ignoreStatic" value="false"/>
+            <property name="ignoreOverriddenMethods" value="false"/>
+        </module>
+
+        <!-- ##################################################### SIZE VIOLATIONS ############################################################################### -->
+
+        <!-- Проверяет наличие длинных анонимных внутренних классов. -->
+        <!--  Длинные анонимные внутренние классы обычно следует реорганизовывать в именованный внутренний класс. -->
+        <!-- См. также Bloch, Effective Java -->
+        <module name="AnonInnerLength">
+            <property name="max" value="60"/>
+        </module>
+
+        <!-- Проверяет наличие длинных методов и конструкторов. -->
+        <module name="MethodLength">
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="max" value="70"/>
+        </module>
+
+        <!-- Проверяет количество параметров метода или конструктора. -->
+        <module name="ParameterNumber">
+            <property name="max" value="10"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <!-- Проверяет количество компонентов записи в заголовке конструкции Record.  -->
+        <module name="RecordComponentNumber">
+            <property name="max" value="20"/>
+        </module>
+
+    </module>
+
+</module>
