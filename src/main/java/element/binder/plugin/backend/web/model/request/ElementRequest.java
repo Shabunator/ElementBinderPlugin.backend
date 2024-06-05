@@ -1,6 +1,9 @@
 package element.binder.plugin.backend.web.model.request;
 
-public record ElementRequest(String name,
+import org.springframework.web.multipart.MultipartFile;
+
+public record ElementRequest(MultipartFile[] images,
+                             String name,
                              String article,
                              String size,
                              String materialName,

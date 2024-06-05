@@ -9,9 +9,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,8 +21,14 @@ public class PluginControllerImpl implements PluginController {
 
     private final ElementService elementService;
 
-    @PostMapping
-    public ResponseEntity<ElementsResponse> post(@RequestBody ElementRequest request) {
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<ElementsResponse> post(@RequestParam("images") MultipartFile[] images,
+                                                 @RequestParam("name") String name,
+                                                 @RequestParam("article") String article,
+                                                 @RequestParam("size") String size,
+                                                 @RequestParam("materialName") String materialName,
+                                                 @RequestParam("price") Double price) {
+        var request = new ElementRequest(images, name, article, size, materialName, price);
         return ResponseEntity.ok(elementService.post(request));
     }
 
