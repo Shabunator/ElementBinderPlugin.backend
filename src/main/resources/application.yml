@@ -19,3 +19,9 @@ jwt:
   key: ${JWT_KEY}
   access-token-expiration: ${ACCESS_TOKEN_EXPIRATION}
   refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
+
+minio:
+  endpoint: "http://localhost:9000"
+  access-key: "minio"
+  secret-key: "minio_password"
+  images-bucket-name: "images"
