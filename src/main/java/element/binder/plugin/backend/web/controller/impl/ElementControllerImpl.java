@@ -11,20 +11,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/plugin")
+@RequestMapping("/api/v1/element")
 public class ElementControllerImpl implements ElementController {
 
     private final ElementService elementService;
 
-    @GetMapping
-    public ResponseEntity<byte[]> load() {
-        var pdfContent = elementService.load();
+    @GetMapping("/pdf-report")
+    public ResponseEntity<byte[]> getPdfReport() {
+        var pdfReport = elementService.generatePdfReport();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=elements_report.pdf");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=pdf_report.pdf");
         headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(pdfContent);
+                .body(pdfReport);
+    }
+
+    @GetMapping("/excel-report")
+    public ResponseEntity<byte[]> getExcelReport() {
+        var excelReport = elementService.generateExcelReport();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=excel_report.xlsx");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(excelReport);
     }
 }

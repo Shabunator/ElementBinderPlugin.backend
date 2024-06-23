@@ -9,12 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ElementService {
 
     private final PdfService pdfService;
+    private final ExcelService excelService;
     private final MinioService minioService;
     private final InnerProjectService innerProjectService;
     private final ElementRepository repository;
@@ -28,8 +31,13 @@ public class ElementService {
         return mapper.elementToElementResponse(saved);
     }
 
-    public byte[] load() {
+    public byte[] generatePdfReport() {
         var elements = repository.findAll();
         return pdfService.generatePdf(elements);
+    }
+
+    public byte[] generateExcelReport() {
+        var elements = repository.findAll();
+        return excelService.generateExcel(elements);
     }
 }

@@ -37,6 +37,10 @@ dependencies {
     /* PDF */
     implementation 'com.itextpdf:itext-core:8.0.3'
 
+    /* Excel */
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
     /* Security */
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
