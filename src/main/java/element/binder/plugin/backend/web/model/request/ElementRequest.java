@@ -2,7 +2,10 @@ package element.binder.plugin.backend.web.model.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public record ElementRequest(MultipartFile[] images,
+import java.util.UUID;
+
+public record ElementRequest(UUID innerProjectId,
+                             MultipartFile[] images,
                              String name,
                              String article,
                              String size,

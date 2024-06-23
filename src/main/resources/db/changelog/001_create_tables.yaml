@@ -9,6 +9,52 @@ databaseChangeLog:
             startValue: 1
 
   - changeSet:
+      id: createTableProjects
+      author: Shabunin_Evgenii
+      changes:
+        - createTable:
+            tableName: projects
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: description
+                  type: varchar(255)
+
+  - changeSet:
+      id: createTableInnerProjects
+      author: Shabunin_Evgenii
+      changes:
+        - createTable:
+            tableName: inner_projects
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: description
+                  type: varchar(255)
+
+  - changeSet:
       id: createTableElements
       author: Shabunin_Evgenii
       changes:
@@ -21,6 +67,11 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: inner_project_id
+                  type: uuid
+                  constraints:
                     nullable: false
               - column:
                   name: name

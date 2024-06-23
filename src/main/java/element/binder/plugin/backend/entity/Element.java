@@ -1,11 +1,16 @@
 package element.binder.plugin.backend.entity;
 
+import element.binder.plugin.backend.configuration.ApplicationContextProvider;
+import element.binder.plugin.backend.service.MinioService;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -22,6 +27,10 @@ public class Element {
     @SequenceGenerator(name = "element_seq", sequenceName = "element_sequence", allocationSize = 1)
     @Column(name = "id")
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "inner_project_id", nullable = false)
+    private InnerProject innerProject;
 
     @Column(name = "name")
     private String name;
@@ -44,5 +53,16 @@ public class Element {
     @PrePersist
     private void onCreate() {
         createDate = Instant.now();
+    }
+
+    @PreRemove
+    public void preRemove() {
+        MinioService minioService = ApplicationContextProvider.getBean(MinioService.class);
+        String bucketName = minioService.checkBucket();
+        String projectName = innerProject.getProject().getName();
+        String innerProjectFolderName = innerProject.getName();
+        String folderPath = projectName + "/" + innerProjectFolderName;
+        String fileName = folderPath + "/" + name;
+        minioService.deleteFile(bucketName, fileName);
     }
 }
