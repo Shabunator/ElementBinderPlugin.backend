@@ -7,6 +7,8 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
 import element.binder.plugin.backend.entity.Element;
+import element.binder.plugin.backend.entity.InnerProject;
+import element.binder.plugin.backend.entity.Project;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -23,10 +25,10 @@ public class PdfService {
         Document document = new Document(pdf);
 
         // Добавляем контент в PDF
-        document.add(new Paragraph("Отчет по элементам"));
+        document.add(new Paragraph("Отчет"));
 
         // Создаем таблицу с колонками соответствующими вашей сущности Element
-        Table table = new Table(UnitValue.createPercentArray(new float[]{3, 3, 3, 3, 3, 3})).useAllAvailableWidth();
+        Table table = new Table(UnitValue.createPercentArray(new float[]{3, 3, 3, 3, 3, 3, 3, 3})).useAllAvailableWidth();
 
         // Добавляем заголовки таблицы
         table.addHeaderCell("ID");
@@ -35,6 +37,8 @@ public class PdfService {
         table.addHeaderCell("Size");
         table.addHeaderCell("Material Name");
         table.addHeaderCell("Price");
+        table.addHeaderCell("Inner Project Name");
+        table.addHeaderCell("Project Name");
 
         // Заполняем таблицу данными
         for (Element element : elements) {
@@ -44,6 +48,14 @@ public class PdfService {
             table.addCell(element.getSize());
             table.addCell(element.getMaterialName());
             table.addCell(element.getPrice().toString());
+
+            // Получаем InnerProject и Project
+            InnerProject innerProject = element.getInnerProject();
+            Project project = innerProject.getProject();
+
+            // Добавляем данные о внутреннем проекте и проекте
+            table.addCell(innerProject.getName());
+            table.addCell(project.getName());
         }
 
         // Добавляем таблицу в документ
