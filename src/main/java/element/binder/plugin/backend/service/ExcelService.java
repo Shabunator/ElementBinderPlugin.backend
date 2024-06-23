@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 public class ExcelService {
 
+    @SuppressWarnings({"MagicNumber", "OneStatementPerLine"})
     public byte[] generateExcel(List<Element> elements) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Отчет");
