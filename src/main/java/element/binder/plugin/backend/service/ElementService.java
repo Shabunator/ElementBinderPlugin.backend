@@ -16,12 +16,13 @@ public class ElementService {
 
     private final PdfService pdfService;
     private final MinioService minioService;
+    private final InnerProjectService innerProjectService;
     private final ElementRepository repository;
     private final ElementMapper mapper = ElementMapper.INSTANCE;
 
     @Transactional
     public ElementsResponse post(ElementRequest request) {
-        var element = mapper.elementRequestToElement(request);
+        var element = mapper.elementRequestToElement(request, innerProjectService);
         minioService.uploadFile(request.images());
         var saved = repository.save(element);
         return mapper.elementToElementResponse(saved);

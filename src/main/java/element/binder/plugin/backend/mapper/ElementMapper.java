@@ -1,11 +1,16 @@
 package element.binder.plugin.backend.mapper;
 
 import element.binder.plugin.backend.entity.Element;
+import element.binder.plugin.backend.entity.InnerProject;
+import element.binder.plugin.backend.service.InnerProjectService;
 import element.binder.plugin.backend.web.model.request.ElementRequest;
 import element.binder.plugin.backend.web.model.response.ElementsResponse;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
+import java.util.UUID;
 
 @Mapper
 public interface ElementMapper {
@@ -21,5 +26,10 @@ public interface ElementMapper {
     @Mapping(source = "materialName", target = "materialName")
     @Mapping(source = "price", target = "price")
     @Mapping(target = "createDate", ignore = true)
-    Element elementRequestToElement(ElementRequest request);
+    @Mapping(target = "innerProject", ignore = true)
+    Element elementRequestToElement(ElementRequest request, @Context InnerProjectService innerProjectService);
+
+    default InnerProject map(UUID innerProjectId, @Context InnerProjectService innerProjectService) {
+        return innerProjectService.findProjectById(innerProjectId);
+    }
 }
