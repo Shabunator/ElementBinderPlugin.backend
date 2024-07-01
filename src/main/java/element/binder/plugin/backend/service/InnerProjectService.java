@@ -33,6 +33,8 @@ public class InnerProjectService {
 
     @Transactional
     public InnerProjectResponseDto create(UUID projectId, InnerProjectRequestDto request) {
+        checkInnerProjectName(request.name());
+
         var innerProject = mapper.innerProjectRequestDtoToInnerProject(projectId, request, projectService);
         innerProjectRepository.save(innerProject);
         log.debug("Создан внутренний проект с ID = {}", innerProject.getId());
@@ -52,6 +54,8 @@ public class InnerProjectService {
 
     @Transactional
     public InnerProjectResponseDto update(UUID id, InnerProjectRequestDto request) {
+        checkInnerProjectName(request.name());
+
         var innerProject = innerProjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(INNER_PROJECT_NOT_FOUND, id)));
 
@@ -69,7 +73,6 @@ public class InnerProjectService {
 
         return mapper.innerProjectToInnerProjectResponseDto(innerProject);
     }
-
 
     @Transactional
     public UUID delete(UUID id) {
@@ -102,5 +105,11 @@ public class InnerProjectService {
     public InnerProject findProjectById(UUID innerProjectId) {
         return innerProjectRepository.findById(innerProjectId)
                 .orElseThrow(() -> new EntityNotFoundException("Inner Project not found with id: " + innerProjectId));
+    }
+
+    private void checkInnerProjectName(String innerProjectName) {
+        if (innerProjectRepository.existsByName(innerProjectName)) {
+            throw new EntityNotFoundException("Inner Project with this name " + "[" + innerProjectName + "]" + " is existing!");
+        }
     }
 }

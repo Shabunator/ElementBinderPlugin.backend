@@ -11,6 +11,7 @@ import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
 import io.minio.StatObjectArgs;
+import io.minio.errors.ErrorResponseException;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -34,22 +35,24 @@ public class MinioService {
      * Метод для загрузки файла в бакет Minio
      *
      * @param images файлы
+     * @param folderPath путь к папке внутри бакета
      */
     @SneakyThrows
-    public void uploadFile(MultipartFile[] images) {
+    public void uploadFile(MultipartFile[] images, String folderPath) {
         var bucketName = checkBucket();
         for (MultipartFile image : images) {
             ByteArrayInputStream bais = new ByteArrayInputStream(image.getBytes());
+            String objectName = folderPath + "/" + image.getOriginalFilename();
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(image.getOriginalFilename())
+                            .object(objectName)
                             .stream(bais, bais.available(), -1)
                             .contentType(image.getContentType())
                             .build());
             bais.close();
         }
-        log.info("Файлы сохранены");
+        log.info("Файлы сохранены в папку: {}", folderPath);
     }
 
     @SneakyThrows
@@ -82,13 +85,8 @@ public class MinioService {
      */
     @SneakyThrows
     public void createFolder(String bucketName, String folderName) {
-        minioClient.putObject(
-                PutObjectArgs.builder()
-                        .bucket(bucketName)
-                        .object(folderName + "/")
-                        .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
-                        .build());
-        log.info("Папка {} была создана в бакете {}", folderName, bucketName);
+        String folderObjectName = folderName.endsWith("/") ? folderName : folderName + "/";
+        createFolderIfNotExists(bucketName, folderObjectName);
     }
 
     /**
@@ -217,20 +215,26 @@ public class MinioService {
      */
     private void createFolderIfNotExists(String bucketName, String folderName) {
         try {
-            boolean folderExists = minioClient.statObject(
-                    StatObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(folderName)
-                            .build()) != null;
-
-            if (!folderExists) {
-                minioClient.putObject(
-                        PutObjectArgs.builder()
+            // Попробуем получить информацию об объекте
+            try {
+                minioClient.statObject(
+                        StatObjectArgs.builder()
                                 .bucket(bucketName)
                                 .object(folderName)
-                                .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
                                 .build());
-                log.info("Папка {} была создана в бакете {}", folderName, bucketName);
+            } catch (ErrorResponseException e) {
+                if (e.errorResponse().code().equals("NoSuchKey")) {
+                    // Объект не существует, создаем его
+                    minioClient.putObject(
+                            PutObjectArgs.builder()
+                                    .bucket(bucketName)
+                                    .object(folderName)
+                                    .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
+                                    .build());
+                    log.info("Папка {} была создана в бакете {}", folderName, bucketName);
+                } else {
+                    throw e;
+                }
             }
         } catch (Exception e) {
             log.error("Ошибка при создании папки {} в бакете {}", folderName, bucketName, e);

@@ -29,6 +29,8 @@ public class ProjectService {
 
     @Transactional
     public ProjectResponseDto create(ProjectRequestDto request) {
+        checkProjectName(request.name());
+
         var project = projectRepository.save(mapper.projectRequestDtoToProject(request));
         log.debug("Создан проект с ID = {}", project.getId());
 
@@ -40,6 +42,8 @@ public class ProjectService {
 
     @Transactional
     public ProjectResponseDto update(UUID id, ProjectRequestDto request) {
+        checkProjectName(request.name());
+
         var project = projectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(PROJECT_NOT_FOUND, id)));
 
@@ -85,5 +89,11 @@ public class ProjectService {
     public Project findProjectById(UUID projectId) {
         return projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + projectId));
+    }
+
+    private void checkProjectName(String projectName) {
+        if (projectRepository.existsByName(projectName)) {
+            throw new EntityNotFoundException("Project with this name " + "[" + projectName + "]" + " is existing!");
+        }
     }
 }

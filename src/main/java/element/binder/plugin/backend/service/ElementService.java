@@ -22,9 +22,14 @@ public class ElementService {
     private final ElementMapper mapper = ElementMapper.INSTANCE;
 
     @Transactional
-    public ElementsResponse post(ElementRequest request) {
+    public ElementsResponse addElement(ElementRequest request) {
+        var innerProject = innerProjectService.findProjectById(request.innerProjectId());
+        var project = innerProject.getProject();
+
+        var folderPath = project.getName() + "/" + innerProject.getName();
+
         var element = mapper.elementRequestToElement(request, innerProjectService);
-        minioService.uploadFile(request.images());
+        minioService.uploadFile(request.images(), folderPath);
         var saved = repository.save(element);
         return mapper.elementToElementResponse(saved);
     }

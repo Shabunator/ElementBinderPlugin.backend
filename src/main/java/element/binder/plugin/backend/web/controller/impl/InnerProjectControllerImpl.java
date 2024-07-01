@@ -54,7 +54,7 @@ public class InnerProjectControllerImpl implements InnerProjectController {
     }
 
     @PostMapping(path = "/{id}/element", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ElementsResponse> post(@PathVariable("id") UUID innerProjectId,
+    public ResponseEntity<ElementsResponse> addElement(@PathVariable("id") UUID innerProjectId,
                                                  @RequestParam("images") MultipartFile[] images,
                                                  @RequestParam("name") String name,
                                                  @RequestParam("article") String article,
@@ -62,6 +62,6 @@ public class InnerProjectControllerImpl implements InnerProjectController {
                                                  @RequestParam("materialName") String materialName,
                                                  @RequestParam("price") Double price) {
         var request = new ElementRequest(innerProjectId, images, name, article, size, materialName, price);
-        return ResponseEntity.ok(elementService.post(request));
+        return ResponseEntity.ok(elementService.addElement(request));
     }
 }

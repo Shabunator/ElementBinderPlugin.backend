@@ -8,4 +8,6 @@ import java.util.UUID;
 
 @Repository
 public interface InnerProjectRepository extends DataTablesRepository<InnerProject, UUID> {
+
+    boolean existsByName(String innerProjectName);
 }

@@ -28,7 +28,7 @@ public interface InnerProjectController {
     ResponseEntity<List<InnerProjectResponseDto>> getInnerProjects(@RequestBody DataTablesInput request);
 
     @Operation(summary = "Сохранение элемента")
-    ResponseEntity<ElementsResponse> post(@PathVariable("id") UUID innerProjectId,
+    ResponseEntity<ElementsResponse> addElement(@PathVariable("id") UUID innerProjectId,
                                           @RequestParam("images") MultipartFile[] images,
                                           @RequestParam("name") String name,
                                           @RequestParam("article") String article,
