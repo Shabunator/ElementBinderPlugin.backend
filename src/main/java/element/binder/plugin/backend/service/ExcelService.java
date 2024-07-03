@@ -33,7 +33,7 @@ public class ExcelService {
 
             // Создаем строку заголовков
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"ID", "Name", "Article", "Size", "Material Name", "Price", "Inner Project Name", "Project Name"};
+            String[] headers = {"Name", "Article", "Size", "Material Name", "Price", "Inner Project Name", "Project Name"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -45,25 +45,24 @@ public class ExcelService {
             for (Element element : elements) {
                 Row row = sheet.createRow(rowNum++);
 
-                row.createCell(0).setCellValue(element.getId() != null ? element.getId().toString() : "");
-                row.createCell(1).setCellValue(element.getName() != null ? element.getName() : "");
-                row.createCell(2).setCellValue(element.getArticle() != null ? element.getArticle() : "");
-                row.createCell(3).setCellValue(element.getSize() != null ? element.getSize() : "");
-                row.createCell(4).setCellValue(element.getMaterialName() != null ? element.getMaterialName() : "");
-                row.createCell(5).setCellValue(element.getPrice() != null ? element.getPrice().toString() : "");
+                row.createCell(0).setCellValue(element.getName() != null ? element.getName() : "");
+                row.createCell(1).setCellValue(element.getArticle() != null ? element.getArticle() : "");
+                row.createCell(2).setCellValue(element.getSize() != null ? element.getSize() : "");
+                row.createCell(3).setCellValue(element.getMaterialName() != null ? element.getMaterialName() : "");
+                row.createCell(4).setCellValue(element.getPrice() != null ? element.getPrice().toString() : "");
 
                 InnerProject innerProject = element.getInnerProject();
                 if (innerProject != null) {
-                    row.createCell(6).setCellValue(innerProject.getName() != null ? innerProject.getName() : "");
+                    row.createCell(5).setCellValue(innerProject.getName() != null ? innerProject.getName() : "");
                     Project project = innerProject.getProject();
                     if (project != null) {
-                        row.createCell(7).setCellValue(project.getName() != null ? project.getName() : "");
+                        row.createCell(6).setCellValue(project.getName() != null ? project.getName() : "");
                     } else {
-                        row.createCell(7).setCellValue("");
+                        row.createCell(6).setCellValue("");
                     }
                 } else {
+                    row.createCell(5).setCellValue("");
                     row.createCell(6).setCellValue("");
-                    row.createCell(7).setCellValue("");
                 }
             }
 

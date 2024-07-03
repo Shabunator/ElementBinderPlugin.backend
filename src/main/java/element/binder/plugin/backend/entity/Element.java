@@ -11,11 +11,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -23,10 +23,9 @@ import java.time.Instant;
 public class Element {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "element_seq")
-    @SequenceGenerator(name = "element_seq", sequenceName = "element_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "inner_project_id", nullable = false)

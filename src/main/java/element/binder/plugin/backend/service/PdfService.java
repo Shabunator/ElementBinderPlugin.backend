@@ -28,10 +28,9 @@ public class PdfService {
         document.add(new Paragraph("Отчет"));
 
         // Создаем таблицу с колонками соответствующими вашей сущности Element
-        Table table = new Table(UnitValue.createPercentArray(new float[]{3, 3, 3, 3, 3, 3, 3, 3})).useAllAvailableWidth();
+        Table table = new Table(UnitValue.createPercentArray(new float[]{3, 3, 3, 3, 3, 3, 3})).useAllAvailableWidth();
 
         // Добавляем заголовки таблицы
-        table.addHeaderCell("ID");
         table.addHeaderCell("Name");
         table.addHeaderCell("Article");
         table.addHeaderCell("Size");
@@ -42,7 +41,6 @@ public class PdfService {
 
         // Заполняем таблицу данными
         for (Element element : elements) {
-            table.addCell(element.getId().toString());
             table.addCell(element.getName());
             table.addCell(element.getArticle());
             table.addCell(element.getSize());

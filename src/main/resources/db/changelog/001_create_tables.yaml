@@ -1,14 +1,5 @@
 databaseChangeLog:
   - changeSet:
-      id: addSequence
-      author: Shabunin_Evgenii
-      changes:
-        - createSequence:
-            sequenceName: element_sequence
-            incrementBy: 1
-            startValue: 1
-
-  - changeSet:
       id: createTableProjects
       author: Shabunin_Evgenii
       changes:
@@ -63,8 +54,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
