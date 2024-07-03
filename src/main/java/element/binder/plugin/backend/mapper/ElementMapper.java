@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
 import java.util.UUID;
 
 @Mapper
@@ -21,17 +22,23 @@ public interface ElementMapper {
     ElementsResponse elementToElementResponse(Element element);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "article", target = "article")
-    @Mapping(source = "size", target = "size")
-    @Mapping(source = "materialName", target = "materialName")
-    @Mapping(source = "price", target = "price")
+    @Mapping(target = "minioUrl", source = "fileUrls", qualifiedByName = "mapFileUrls")
+    @Mapping(target = "name", source = "request.name")
+    @Mapping(target = "article", source = "request.article")
+    @Mapping(target = "size", source = "request.size")
+    @Mapping(target = "materialName", source = "request.materialName")
+    @Mapping(target = "price", source = "request.price")
     @Mapping(target = "createDate", ignore = true)
-    @Mapping(source = "innerProjectId", target = "innerProject", qualifiedByName = "mapInnerProject")
-    Element elementRequestToElement(ElementRequest request, @Context InnerProjectService innerProjectService);
+    @Mapping(target = "innerProject", source = "request.innerProjectId", qualifiedByName = "mapInnerProject")
+    Element elementRequestToElement(ElementRequest request, List<String> fileUrls, @Context InnerProjectService innerProjectService);
 
     @Named("mapInnerProject")
     default InnerProject map(UUID innerProjectId, @Context InnerProjectService innerProjectService) {
         return innerProjectService.findProjectById(innerProjectId);
+    }
+
+    @Named("mapFileUrls")
+    default String map(List<String> fileUrls) {
+        return fileUrls.getFirst();
     }
 }

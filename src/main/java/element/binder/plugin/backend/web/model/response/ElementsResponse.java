@@ -2,5 +2,11 @@ package element.binder.plugin.backend.web.model.response;
 
 import java.util.UUID;
 
-public record ElementsResponse(UUID id, String name, String article, String size, String materialName, Double price) {
+public record ElementsResponse(UUID id,
+                               String name,
+                               String minioUrl,
+                               String article,
+                               String size,
+                               String materialName,
+                               Double price) {
 }

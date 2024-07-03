@@ -30,8 +30,8 @@ public class ElementService {
 
         var folderPath = project.getName() + "/" + innerProject.getName();
 
-        var element = mapper.elementRequestToElement(request, innerProjectService);
-        minioService.uploadFile(request.images(), folderPath);
+        var fileUrls = minioService.uploadFile(request.images(), folderPath);
+        var element = mapper.elementRequestToElement(request, fileUrls, innerProjectService);
         var saved = elementRepository.save(element);
         return mapper.elementToElementResponse(saved);
     }

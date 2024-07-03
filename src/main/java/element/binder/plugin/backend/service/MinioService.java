@@ -4,6 +4,7 @@ import element.binder.plugin.backend.security.AppUserDetails;
 import io.minio.BucketExistsArgs;
 import io.minio.CopyObjectArgs;
 import io.minio.CopySource;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -24,6 +25,8 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.minio.http.Method.GET;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,12 +37,15 @@ public class MinioService {
     /**
      * Метод для загрузки файла в бакет Minio
      *
-     * @param images файлы
+     * @param images     файлы
      * @param folderPath путь к папке внутри бакета
+     * @return ссылки на сохраненные объекты
      */
     @SneakyThrows
-    public void uploadFile(MultipartFile[] images, String folderPath) {
+    public List<String> uploadFile(MultipartFile[] images, String folderPath) {
         var bucketName = checkBucket();
+        List<String> fileUrls = new ArrayList<>();
+
         for (MultipartFile image : images) {
             ByteArrayInputStream bais = new ByteArrayInputStream(image.getBytes());
             String objectName = folderPath + "/" + image.getOriginalFilename();
@@ -51,8 +57,17 @@ public class MinioService {
                             .contentType(image.getContentType())
                             .build());
             bais.close();
+
+            String fileUrl = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(GET)
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .build());
+            fileUrls.add(fileUrl);
         }
         log.info("Файлы сохранены в папку: {}", folderPath);
+        return fileUrls;
     }
 
     @SneakyThrows

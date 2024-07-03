@@ -31,6 +31,9 @@ public class Element {
     @JoinColumn(name = "inner_project_id", nullable = false)
     private InnerProject innerProject;
 
+    @Column(name = "minio_url")
+    private String minioUrl;
+
     @Column(name = "name")
     private String name;
 

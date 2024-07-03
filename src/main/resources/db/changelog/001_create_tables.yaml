@@ -64,6 +64,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: minio_url
+                  type: TEXT
+              - column:
                   name: name
                   type: varchar(255)
               - column:
