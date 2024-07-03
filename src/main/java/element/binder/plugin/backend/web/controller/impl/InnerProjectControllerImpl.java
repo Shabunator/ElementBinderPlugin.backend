@@ -10,6 +10,7 @@ import element.binder.plugin.backend.web.model.response.InnerProjectResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -63,5 +64,29 @@ public class InnerProjectControllerImpl implements InnerProjectController {
                                                  @RequestParam("price") Double price) {
         var request = new ElementRequest(innerProjectId, images, name, article, size, materialName, price);
         return ResponseEntity.ok(elementService.addElement(request));
+    }
+
+    @GetMapping("/{id}/element/pdf-report")
+    public ResponseEntity<byte[]> getPdfReport(@PathVariable("id") UUID innerProjectId) {
+        var pdfReport = elementService.generatePdfReport(innerProjectId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=pdf_report.pdf");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
+    }
+
+    @GetMapping("/{id}/element/excel-report")
+    public ResponseEntity<byte[]> getExcelReport(@PathVariable("id") UUID innerProjectId) {
+        var excelReport = elementService.generateExcelReport(innerProjectId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=excel_report.xlsx");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(excelReport);
     }
 }

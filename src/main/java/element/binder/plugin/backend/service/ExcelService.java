@@ -2,7 +2,6 @@ package element.binder.plugin.backend.service;
 
 import element.binder.plugin.backend.entity.Element;
 import element.binder.plugin.backend.entity.InnerProject;
-import element.binder.plugin.backend.entity.Project;
 import element.binder.plugin.backend.exception.ExcelReportException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -33,7 +32,7 @@ public class ExcelService {
 
             // Создаем строку заголовков
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"Name", "Article", "Size", "Material Name", "Price", "Inner Project Name", "Project Name"};
+            String[] headers = {"Name", "Article", "Size", "Material Name", "Price", "Inner Project"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -54,15 +53,8 @@ public class ExcelService {
                 InnerProject innerProject = element.getInnerProject();
                 if (innerProject != null) {
                     row.createCell(5).setCellValue(innerProject.getName() != null ? innerProject.getName() : "");
-                    Project project = innerProject.getProject();
-                    if (project != null) {
-                        row.createCell(6).setCellValue(project.getName() != null ? project.getName() : "");
-                    } else {
-                        row.createCell(6).setCellValue("");
-                    }
                 } else {
                     row.createCell(5).setCellValue("");
-                    row.createCell(6).setCellValue("");
                 }
             }
 

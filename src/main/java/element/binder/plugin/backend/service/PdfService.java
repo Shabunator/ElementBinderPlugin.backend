@@ -1,23 +1,24 @@
 package element.binder.plugin.backend.service;
 
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
 import element.binder.plugin.backend.entity.Element;
 import element.binder.plugin.backend.entity.InnerProject;
-import element.binder.plugin.backend.entity.Project;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @Service
+@SuppressWarnings("MagicNumber")
 public class PdfService {
 
-    @SuppressWarnings("MagicNumber")
     public byte[] generatePdf(List<Element> elements) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(byteArrayOutputStream);
@@ -27,17 +28,21 @@ public class PdfService {
         // Добавляем контент в PDF
         document.add(new Paragraph("Отчет"));
 
-        // Создаем таблицу с колонками соответствующими вашей сущности Element
-        Table table = new Table(UnitValue.createPercentArray(new float[]{3, 3, 3, 3, 3, 3, 3})).useAllAvailableWidth();
+        // Заголовки таблицы
+        String[] headers = {"Name", "Article", "Size", "Material Name", "Price", "Inner Project"};
+
+        // Вычисляем ширину столбцов на основе заголовков
+        float[] columnWidths = calculateColumnWidths(headers);
+
+        // Создаем таблицу с вычисленными ширинами колонок
+        Table table = new Table(UnitValue.createPointArray(columnWidths));
 
         // Добавляем заголовки таблицы
-        table.addHeaderCell("Name");
-        table.addHeaderCell("Article");
-        table.addHeaderCell("Size");
-        table.addHeaderCell("Material Name");
-        table.addHeaderCell("Price");
-        table.addHeaderCell("Inner Project Name");
-        table.addHeaderCell("Project Name");
+        for (String header : headers) {
+            Cell headerCell = new Cell().add(new Paragraph(header));
+            headerCell.setBackgroundColor(ColorConstants.LIGHT_GRAY);
+            table.addHeaderCell(headerCell);
+        }
 
         // Заполняем таблицу данными
         for (Element element : elements) {
@@ -49,11 +54,9 @@ public class PdfService {
 
             // Получаем InnerProject и Project
             InnerProject innerProject = element.getInnerProject();
-            Project project = innerProject.getProject();
 
             // Добавляем данные о внутреннем проекте и проекте
             table.addCell(innerProject.getName());
-            table.addCell(project.getName());
         }
 
         // Добавляем таблицу в документ
@@ -63,6 +66,13 @@ public class PdfService {
         document.close();
 
         return byteArrayOutputStream.toByteArray();
+    }
 
+    private float[] calculateColumnWidths(String[] headers) {
+        float[] widths = new float[headers.length];
+        for (int i = 0; i < headers.length; i++) {
+            widths[i] = headers[i].length() * 8;
+        }
+        return widths;
     }
 }

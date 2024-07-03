@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class ElementService {
     private final ExcelService excelService;
     private final MinioService minioService;
     private final InnerProjectService innerProjectService;
-    private final ElementRepository repository;
+    private final ElementRepository elementRepository;
     private final ElementMapper mapper = ElementMapper.INSTANCE;
 
     @Transactional
@@ -30,17 +32,19 @@ public class ElementService {
 
         var element = mapper.elementRequestToElement(request, innerProjectService);
         minioService.uploadFile(request.images(), folderPath);
-        var saved = repository.save(element);
+        var saved = elementRepository.save(element);
         return mapper.elementToElementResponse(saved);
     }
 
-    public byte[] generatePdfReport() {
-        var elements = repository.findAll();
+    public byte[] generatePdfReport(UUID innerProjectId) {
+        var innerProject = innerProjectService.findProjectById(innerProjectId);
+        var elements = elementRepository.findAllByInnerProjectId(innerProject.getId());
         return pdfService.generatePdf(elements);
     }
 
-    public byte[] generateExcelReport() {
-        var elements = repository.findAll();
+    public byte[] generateExcelReport(UUID innerProjectId) {
+        var innerProject = innerProjectService.findProjectById(innerProjectId);
+        var elements = elementRepository.findAllByInnerProjectId(innerProject.getId());
         return excelService.generateExcel(elements);
     }
 }
