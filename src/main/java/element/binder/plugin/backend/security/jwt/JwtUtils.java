@@ -40,11 +40,15 @@ public class JwtUtils {
     }
 
     public String generateJwtToken(UUID id, String name, String email, List<String> roles) {
+
+        long now = System.currentTimeMillis();
+        long expirationTime = now + jwtProperties.getAccessTokenExpiration().toMillis();
+
         return Jwts.builder()
                 .subject(String.valueOf(id))
                 .claims(fillClaims(name, email, roles))
-                .issuedAt(new Date())
-                .expiration(getExpiration())
+                .issuedAt(new Date(now))
+                .expiration(new Date(expirationTime))
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -75,10 +79,6 @@ public class JwtUtils {
         claims.put("email", email);
         claims.put("roles", roles);
         return claims;
-    }
-
-    private Date getExpiration() {
-        return new Date((new Date()).getTime() + jwtProperties.getAccessTokenExpiration().toMillis());
     }
 
     private SecretKey getSecretKey() {
