@@ -39,16 +39,6 @@ public class InnerProjectService {
         innerProjectRepository.save(innerProject);
         log.debug("Создан внутренний проект с ID = {}", innerProject.getId());
 
-        var project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(PROJECT_NOT_FOUND, projectId)));
-
-        String bucketName = minioService.checkBucket();
-        String projectFolderName = project.getName();
-        String innerProjectFolderName = innerProject.getName();
-        String folderPath = projectFolderName + "/" + innerProjectFolderName;
-
-        minioService.createFolderHierarchy(bucketName, folderPath);
-
         return mapper.innerProjectToInnerProjectResponseDto(innerProject);
     }
 

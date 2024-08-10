@@ -2,6 +2,11 @@ spring:
   application:
     name: element-binder
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DBNAME}
     username: ${DB_USER}
@@ -21,7 +26,7 @@ jwt:
   refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
 
 minio:
-  endpoint: "http://localhost:9000"
+  endpoint: "http://minio:9000"
   access-key: "minio"
   secret-key: "minio_password"
   images-bucket-name: "images"

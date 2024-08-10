@@ -34,9 +34,6 @@ public class ProjectService {
         var project = projectRepository.save(mapper.projectRequestDtoToProject(request));
         log.debug("Создан проект с ID = {}", project.getId());
 
-        var bucketName = minioService.checkBucket();
-        minioService.createFolder(bucketName, project.getName());
-
         return mapper.projectToProjectResponseDto(project);
     }
 
