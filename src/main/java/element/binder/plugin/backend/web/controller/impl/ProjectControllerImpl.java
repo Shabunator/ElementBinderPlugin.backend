@@ -52,8 +52,14 @@ public class ProjectControllerImpl implements ProjectController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<List<ProjectResponseDto>> getProjects(@RequestBody DataTablesInput request) {
+    public ResponseEntity<List<ProjectResponseDto>> getProjects(DataTablesInput request) {
         return ResponseEntity.ok(projectService.getAll(request));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<ProjectResponseDto> getProject(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok(projectService.getProject(id));
     }
 
     @PostMapping("/{id}/inner-project")
