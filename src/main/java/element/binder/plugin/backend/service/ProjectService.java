@@ -84,7 +84,7 @@ public class ProjectService {
     }
 
     public ProjectResponseDto getProject(UUID projectId) {
-        var project=  projectRepository.findById(projectId)
+        var project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + projectId));
 
         return mapper.projectToProjectResponseDto(project);
