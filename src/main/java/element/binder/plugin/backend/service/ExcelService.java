@@ -3,17 +3,27 @@ package element.binder.plugin.backend.service;
 import element.binder.plugin.backend.entity.Element;
 import element.binder.plugin.backend.entity.InnerProject;
 import element.binder.plugin.backend.exception.ExcelReportException;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 @Service
@@ -22,43 +32,52 @@ public class ExcelService {
     @SuppressWarnings({"MagicNumber", "OneStatementPerLine"})
     public byte[] generateExcel(List<Element> elements) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            Sheet sheet = workbook.createSheet("Отчет");
+            Sheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName("Отчет"));
 
-            // Создаем стиль для заголовков
+            // Создание стиля для заголовков
             CellStyle headerStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
 
-            // Создаем строку заголовков
+            // Создание строки заголовков
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"Name", "Article", "Size", "Material Name", "Price", "Inner Project"};
+            String[] headers = {"Изображение", "Название", "Артикул", "Размер", "Материал", "Цена", "Внутренний проект"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
                 cell.setCellStyle(headerStyle);
             }
 
-            // Заполняем таблицу данными
+            // Заполнение таблицы данными
             int rowNum = 1;
             for (Element element : elements) {
                 Row row = sheet.createRow(rowNum++);
 
-                row.createCell(0).setCellValue(element.getName() != null ? element.getName() : "");
-                row.createCell(1).setCellValue(element.getArticle() != null ? element.getArticle() : "");
-                row.createCell(2).setCellValue(element.getSize() != null ? element.getSize() : "");
-                row.createCell(3).setCellValue(element.getMaterialName() != null ? element.getMaterialName() : "");
-                row.createCell(4).setCellValue(element.getPrice() != null ? element.getPrice().toString() : "");
+                // Вставка изображения
+                if (element.getMinioUrl() != null) {
+                    try (InputStream webpInputStream = new URL(element.getMinioUrl()).openStream()) {
+                        insertImageIntoExcel(workbook, sheet, webpInputStream, rowNum - 1, 0);
+                    } catch (IOException e) {
+                        System.err.println("Ошибка загрузки изображения: " + e.getMessage());
+                    }
+                }
+
+                row.createCell(1).setCellValue(element.getName() != null ? element.getName() : "");
+                row.createCell(2).setCellValue(element.getArticle() != null ? element.getArticle() : "");
+                row.createCell(3).setCellValue(element.getSize() != null ? element.getSize() : "");
+                row.createCell(4).setCellValue(element.getMaterialName() != null ? element.getMaterialName() : "");
+                row.createCell(5).setCellValue(element.getPrice() != null ? element.getPrice().toString() : "");
 
                 InnerProject innerProject = element.getInnerProject();
                 if (innerProject != null) {
-                    row.createCell(5).setCellValue(innerProject.getName() != null ? innerProject.getName() : "");
+                    row.createCell(6).setCellValue(innerProject.getName() != null ? innerProject.getName() : "");
                 } else {
-                    row.createCell(5).setCellValue("");
+                    row.createCell(6).setCellValue("");
                 }
             }
 
-            // Автоматически подгоняем ширину колонок под содержимое
+            // Автоматическое изменение размера столбцов
             for (int i = 0; i < headers.length; i++) {
                 sheet.autoSizeColumn(i);
             }
@@ -66,7 +85,41 @@ public class ExcelService {
             workbook.write(byteArrayOutputStream);
             return byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
-            throw new ExcelReportException("Failed to generate Excel report", e);
+            throw new ExcelReportException("Не удалось создать Excel отчет", e);
         }
+    }
+
+    // Метод для чтения WebP изображения
+    private BufferedImage readWebP(InputStream inputStream) throws IOException {
+        return ImageIO.read(inputStream);
+    }
+
+    // Метод для вставки изображения в Excel
+    @SuppressWarnings("MagicNumber")
+    private void insertImageIntoExcel(Workbook workbook, Sheet sheet, InputStream webpInputStream, int row, int col) throws IOException {
+        BufferedImage originalImage = readWebP(webpInputStream);
+
+        // Уменьшение размера изображения до 6%
+        BufferedImage resizedImage = Thumbnails.of(originalImage)
+                .scale(0.06)
+                .asBufferedImage();
+
+        // Преобразование BufferedImage в byte[]
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(resizedImage, "png", baos);
+        byte[] imageBytes = baos.toByteArray();
+
+        // Вставка изображения в Excel
+        int pictureIdx = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_PNG);
+        CreationHelper helper = workbook.getCreationHelper();
+        Drawing<?> drawing = sheet.createDrawingPatriarch();
+        ClientAnchor anchor = helper.createClientAnchor();
+
+        // Установка позиции изображения
+        anchor.setCol1(col);
+        anchor.setRow1(row);
+
+        Picture picture = drawing.createPicture(anchor, pictureIdx);
+        picture.resize(); // Автоматическое изменение размера ячейки под изображение
     }
 }
