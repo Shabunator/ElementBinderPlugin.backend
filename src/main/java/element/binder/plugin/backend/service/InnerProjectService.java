@@ -4,7 +4,6 @@ import element.binder.plugin.backend.entity.InnerProject;
 import element.binder.plugin.backend.exception.EntityNotFoundException;
 import element.binder.plugin.backend.mapper.InnerProjectMapper;
 import element.binder.plugin.backend.repository.InnerProjectRepository;
-import element.binder.plugin.backend.repository.ProjectRepository;
 import element.binder.plugin.backend.web.model.request.InnerProjectRequestDto;
 import element.binder.plugin.backend.web.model.response.InnerProjectResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +23,9 @@ public class InnerProjectService {
 
     private final MinioService minioService;
     private final ProjectService projectService;
-    private final ProjectRepository projectRepository;
     private final InnerProjectRepository innerProjectRepository;
     private final InnerProjectMapper mapper = InnerProjectMapper.INSTANCE;
 
-    private static final String PROJECT_NOT_FOUND = "Проект с ID = %s не найден";
     private static final String INNER_PROJECT_NOT_FOUND = "Внутренний проект с ID = %d не найден";
 
     @Transactional
@@ -90,6 +87,14 @@ public class InnerProjectService {
         return innerProjects.getData().stream()
                 .map(mapper::innerProjectToInnerProjectResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    public List<InnerProjectResponseDto> getAllByProjectId(UUID projectId) {
+        var project = projectService.findProjectById(projectId);
+        var innerProjectList = innerProjectRepository.findAllByProject(project)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Inner Project not found by ProjectId = %s", projectId)));
+        return mapper.innerProjectListToInnerProjectResponseDto(innerProjectList);
     }
 
     public InnerProject findProjectById(UUID innerProjectId) {

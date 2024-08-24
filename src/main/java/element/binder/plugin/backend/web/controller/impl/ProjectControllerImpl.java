@@ -68,4 +68,10 @@ public class ProjectControllerImpl implements ProjectController {
                                                                       @RequestBody @Valid InnerProjectRequestDto request) {
         return ResponseEntity.ok(innerProjectService.create(id, request));
     }
+
+    @GetMapping("/{id}/inner-project")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<InnerProjectResponseDto>> getAllInnerProjectsByProject(@PathVariable UUID id) {
+        return ResponseEntity.ok(innerProjectService.getAllByProjectId(id));
+    }
 }
