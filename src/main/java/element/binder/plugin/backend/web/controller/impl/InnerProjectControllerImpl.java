@@ -66,19 +66,7 @@ public class InnerProjectControllerImpl implements InnerProjectController {
         return ResponseEntity.ok(elementService.addElement(request));
     }
 
-    @GetMapping("/{id}/element/pdf-report")
-    public ResponseEntity<byte[]> getPdfReport(@PathVariable("id") UUID innerProjectId) {
-        var pdfReport = elementService.generatePdfReport(innerProjectId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=pdf_report.pdf");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(pdfReport);
-    }
-
-    @GetMapping("/{id}/element/excel-report")
+    @GetMapping("/{id}/excel-report")
     public ResponseEntity<byte[]> getExcelReport(@PathVariable("id") UUID innerProjectId) {
         var excelReport = elementService.generateExcelReport(innerProjectId);
         HttpHeaders headers = new HttpHeaders();

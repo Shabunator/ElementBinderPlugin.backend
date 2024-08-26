@@ -16,7 +16,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ElementService {
 
-    private final PdfService pdfService;
     private final ExcelService excelService;
     private final MinioService minioService;
     private final InnerProjectService innerProjectService;
@@ -34,12 +33,6 @@ public class ElementService {
         var element = mapper.elementRequestToElement(request, fileUrls, innerProjectService);
         var saved = elementRepository.save(element);
         return mapper.elementToElementResponse(saved);
-    }
-
-    public byte[] generatePdfReport(UUID innerProjectId) {
-        var innerProject = innerProjectService.findProjectById(innerProjectId);
-        var elements = elementRepository.findAllByInnerProjectId(innerProject.getId());
-        return pdfService.generatePdf(elements);
     }
 
     public byte[] generateExcelReport(UUID innerProjectId) {

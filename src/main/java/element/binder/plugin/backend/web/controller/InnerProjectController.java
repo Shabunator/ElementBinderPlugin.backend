@@ -36,9 +36,6 @@ public interface InnerProjectController {
                                           @RequestParam("materialName") String materialName,
                                           @RequestParam("price") Double price);
 
-    @Operation(summary = "Сформировать отчет в формате PDF")
-    ResponseEntity<byte[]> getPdfReport(@PathVariable("id") UUID innerProjectId);
-
     @Operation(summary = "Сформировать отчет в формате Excel")
     ResponseEntity<byte[]> getExcelReport(@PathVariable("id") UUID innerProjectId);
 }
