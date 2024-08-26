@@ -5,7 +5,7 @@ import element.binder.plugin.backend.service.InnerProjectService;
 import element.binder.plugin.backend.web.controller.InnerProjectController;
 import element.binder.plugin.backend.web.model.request.ElementRequest;
 import element.binder.plugin.backend.web.model.request.InnerProjectRequestDto;
-import element.binder.plugin.backend.web.model.response.ElementsResponse;
+import element.binder.plugin.backend.web.model.response.ElementResponse;
 import element.binder.plugin.backend.web.model.response.InnerProjectResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,13 +55,13 @@ public class InnerProjectControllerImpl implements InnerProjectController {
     }
 
     @PostMapping(path = "/{id}/element", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ElementsResponse> addElement(@PathVariable("id") UUID innerProjectId,
-                                                 @RequestParam("images") MultipartFile[] images,
-                                                 @RequestParam("name") String name,
-                                                 @RequestParam("article") String article,
-                                                 @RequestParam("size") String size,
-                                                 @RequestParam("materialName") String materialName,
-                                                 @RequestParam("price") Double price) {
+    public ResponseEntity<ElementResponse> addElement(@PathVariable("id") UUID innerProjectId,
+                                                      @RequestParam("images") MultipartFile[] images,
+                                                      @RequestParam("name") String name,
+                                                      @RequestParam("article") String article,
+                                                      @RequestParam("size") String size,
+                                                      @RequestParam("materialName") String materialName,
+                                                      @RequestParam("price") Double price) {
         var request = new ElementRequest(innerProjectId, images, name, article, size, materialName, price);
         return ResponseEntity.ok(elementService.addElement(request));
     }
@@ -76,5 +76,11 @@ public class InnerProjectControllerImpl implements InnerProjectController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(excelReport);
+    }
+
+    @GetMapping("/{id}/elements")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<ElementResponse>> getInnerProjectElements(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok(elementService.getAllElementsByInnerProject(id));
     }
 }

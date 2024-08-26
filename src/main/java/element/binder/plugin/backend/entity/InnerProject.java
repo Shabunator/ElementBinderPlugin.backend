@@ -50,4 +50,9 @@ public class InnerProject {
     @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     private Set<Element> elements = new HashSet<>();
+
+    public void addElement(Element element) {
+        elements.add(element);
+        element.setInnerProject(this);
+    }
 }

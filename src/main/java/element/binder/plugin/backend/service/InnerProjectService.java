@@ -24,7 +24,8 @@ public class InnerProjectService {
     private final MinioService minioService;
     private final ProjectService projectService;
     private final InnerProjectRepository innerProjectRepository;
-    private final InnerProjectMapper mapper = InnerProjectMapper.INSTANCE;
+    private final InnerProjectMapper innerProjectMapper = InnerProjectMapper.INSTANCE;
+
 
     private static final String INNER_PROJECT_NOT_FOUND = "Внутренний проект с ID = %d не найден";
 
@@ -32,11 +33,12 @@ public class InnerProjectService {
     public InnerProjectResponseDto create(UUID projectId, InnerProjectRequestDto request) {
         checkInnerProjectName(request.name());
 
-        var innerProject = mapper.innerProjectRequestDtoToInnerProject(projectId, request, projectService);
+        var innerProject = innerProjectMapper
+                .innerProjectRequestDtoToInnerProject(projectId, request, projectService);
         innerProjectRepository.save(innerProject);
         log.debug("Создан внутренний проект с ID = {}", innerProject.getId());
 
-        return mapper.innerProjectToInnerProjectResponseDto(innerProject);
+        return innerProjectMapper.innerProjectToInnerProjectResponseDto(innerProject);
     }
 
     @Transactional
@@ -54,11 +56,11 @@ public class InnerProjectService {
             minioService.renameFolder(bucketName, currentFolderName, newFolderName);
         }
 
-        mapper.updateInnerProjectFromInnerProjectRequestDto(request);
+        innerProjectMapper.updateInnerProjectFromInnerProjectRequestDto(request);
         innerProjectRepository.save(innerProject);
         log.debug("Обновлены данные внутреннего проекта с ID = {}", innerProject.getId());
 
-        return mapper.innerProjectToInnerProjectResponseDto(innerProject);
+        return innerProjectMapper.innerProjectToInnerProjectResponseDto(innerProject);
     }
 
     @Transactional
@@ -82,10 +84,11 @@ public class InnerProjectService {
         if (innerProjects.getData().isEmpty()) {
             log.warn("Таблица внутренних проектов пуста");
         } else {
-            log.debug("Получение всех внутренних проектов. Количество записей = {}", innerProjects.getRecordsFiltered());
+            log.debug("Получение всех внутренних проектов. Количество записей = {}",
+                    innerProjects.getRecordsFiltered());
         }
         return innerProjects.getData().stream()
-                .map(mapper::innerProjectToInnerProjectResponseDto)
+                .map(innerProjectMapper::innerProjectToInnerProjectResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -94,7 +97,7 @@ public class InnerProjectService {
         var innerProjectList = innerProjectRepository.findAllByProject(project)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Inner Project not found by ProjectId = %s", projectId)));
-        return mapper.innerProjectListToInnerProjectResponseDto(innerProjectList);
+        return innerProjectMapper.innerProjectListToInnerProjectResponseDto(innerProjectList);
     }
 
     public InnerProject findProjectById(UUID innerProjectId) {
@@ -104,7 +107,8 @@ public class InnerProjectService {
 
     private void checkInnerProjectName(String innerProjectName) {
         if (innerProjectRepository.existsByName(innerProjectName)) {
-            throw new EntityNotFoundException("Inner Project with this name " + "[" + innerProjectName + "]" + " is existing!");
+            throw new EntityNotFoundException("Inner Project with this name "
+                    + "[" + innerProjectName + "]" + " is existing!");
         }
     }
 }

@@ -3,12 +3,13 @@ package element.binder.plugin.backend.service;
 import element.binder.plugin.backend.mapper.ElementMapper;
 import element.binder.plugin.backend.repository.ElementRepository;
 import element.binder.plugin.backend.web.model.request.ElementRequest;
-import element.binder.plugin.backend.web.model.response.ElementsResponse;
+import element.binder.plugin.backend.web.model.response.ElementResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,19 +21,26 @@ public class ElementService {
     private final MinioService minioService;
     private final InnerProjectService innerProjectService;
     private final ElementRepository elementRepository;
-    private final ElementMapper mapper = ElementMapper.INSTANCE;
+    private final ElementMapper elementMapper = ElementMapper.INSTANCE;
 
     @Transactional
-    public ElementsResponse addElement(ElementRequest request) {
+    public ElementResponse addElement(ElementRequest request) {
         var innerProject = innerProjectService.findProjectById(request.innerProjectId());
         var project = innerProject.getProject();
 
         var folderPath = project.getName() + "/" + innerProject.getName();
 
         var fileUrls = minioService.uploadFile(request.images(), folderPath);
-        var element = mapper.elementRequestToElement(request, fileUrls, innerProjectService);
+        var element = elementMapper.elementRequestToElement(request, fileUrls, innerProjectService);
         var saved = elementRepository.save(element);
-        return mapper.elementToElementResponse(saved);
+
+        innerProject.addElement(saved);
+        return elementMapper.elementToElementResponse(saved);
+    }
+
+    public List<ElementResponse> getAllElementsByInnerProject(UUID innerProjectId) {
+        var innerProject = innerProjectService.findProjectById(innerProjectId);
+        return elementMapper.elementsToElementResponseList(innerProject.getElements());
     }
 
     public byte[] generateExcelReport(UUID innerProjectId) {

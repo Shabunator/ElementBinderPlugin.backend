@@ -1,7 +1,7 @@
 package element.binder.plugin.backend.web.controller;
 
 import element.binder.plugin.backend.web.model.request.InnerProjectRequestDto;
-import element.binder.plugin.backend.web.model.response.ElementsResponse;
+import element.binder.plugin.backend.web.model.response.ElementResponse;
 import element.binder.plugin.backend.web.model.response.InnerProjectResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,7 +28,7 @@ public interface InnerProjectController {
     ResponseEntity<List<InnerProjectResponseDto>> getInnerProjects(@RequestBody DataTablesInput request);
 
     @Operation(summary = "Сохранение элемента")
-    ResponseEntity<ElementsResponse> addElement(@PathVariable("id") UUID innerProjectId,
+    ResponseEntity<ElementResponse> addElement(@PathVariable("id") UUID innerProjectId,
                                           @RequestParam("images") MultipartFile[] images,
                                           @RequestParam("name") String name,
                                           @RequestParam("article") String article,
@@ -38,4 +38,7 @@ public interface InnerProjectController {
 
     @Operation(summary = "Сформировать отчет в формате Excel")
     ResponseEntity<byte[]> getExcelReport(@PathVariable("id") UUID innerProjectId);
+
+    @Operation(summary = "Получить все элементы по внутреннему проекту")
+    ResponseEntity<List<ElementResponse>> getInnerProjectElements(@PathVariable("id") UUID id);
 }

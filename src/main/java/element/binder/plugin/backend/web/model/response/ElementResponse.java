@@ -1,9 +1,6 @@
 package element.binder.plugin.backend.web.model.response;
 
-import java.util.UUID;
-
-public record ElementsResponse(UUID id,
-                               String name,
+public record ElementResponse(String name,
                                String minioUrl,
                                String article,
                                String size,

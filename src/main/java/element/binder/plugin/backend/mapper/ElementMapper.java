@@ -4,7 +4,7 @@ import element.binder.plugin.backend.entity.Element;
 import element.binder.plugin.backend.entity.InnerProject;
 import element.binder.plugin.backend.service.InnerProjectService;
 import element.binder.plugin.backend.web.model.request.ElementRequest;
-import element.binder.plugin.backend.web.model.response.ElementsResponse;
+import element.binder.plugin.backend.web.model.response.ElementResponse;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,6 +12,7 @@ import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Mapper
@@ -19,7 +20,9 @@ public interface ElementMapper {
 
     ElementMapper INSTANCE = Mappers.getMapper(ElementMapper.class);
 
-    ElementsResponse elementToElementResponse(Element element);
+    List<ElementResponse> elementsToElementResponseList(Set<Element> elements);
+
+    ElementResponse elementToElementResponse(Element element);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "minioUrl", source = "fileUrls", qualifiedByName = "mapFileUrls")
