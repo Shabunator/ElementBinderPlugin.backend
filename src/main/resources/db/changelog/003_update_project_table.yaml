@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: createTableUsers
+      author: Evgenii_Shabunin
+      changes:
+        - addColumn:
+            tableName: projects
+            columns:
+              - column:
+                  name: user_id
+                  type: uuid
+
+        - addForeignKeyConstraint:
+            baseTableName: projects
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_projects_user

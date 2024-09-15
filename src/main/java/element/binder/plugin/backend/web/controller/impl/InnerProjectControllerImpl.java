@@ -9,7 +9,6 @@ import element.binder.plugin.backend.web.model.response.ElementResponse;
 import element.binder.plugin.backend.web.model.response.InnerProjectResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,12 +45,6 @@ public class InnerProjectControllerImpl implements InnerProjectController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<UUID> deleteInnerProject(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(innerProjectService.delete(id));
-    }
-
-    @GetMapping
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<List<InnerProjectResponseDto>> getInnerProjects(@RequestBody DataTablesInput request) {
-        return ResponseEntity.ok(innerProjectService.getAll(request));
     }
 
     @PostMapping(path = "/{id}/element", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

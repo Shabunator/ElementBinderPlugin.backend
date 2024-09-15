@@ -9,7 +9,6 @@ import element.binder.plugin.backend.web.model.response.InnerProjectResponseDto;
 import element.binder.plugin.backend.web.model.response.ProjectResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,12 +30,6 @@ public class ProjectControllerImpl implements ProjectController {
     private final ProjectService projectService;
     private final InnerProjectService innerProjectService;
 
-    @PostMapping
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<ProjectResponseDto> createProject(@RequestBody @Valid ProjectRequestDto request) {
-        return ResponseEntity.ok(projectService.create(request));
-    }
-
     @PostMapping("/{id}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<ProjectResponseDto> updateProject(@PathVariable("id") UUID id,
@@ -48,12 +41,6 @@ public class ProjectControllerImpl implements ProjectController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<UUID> deleteProject(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(projectService.delete(id));
-    }
-
-    @GetMapping
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<List<ProjectResponseDto>> getProjects(DataTablesInput request) {
-        return ResponseEntity.ok(projectService.getAll(request));
     }
 
     @GetMapping("/{id}")

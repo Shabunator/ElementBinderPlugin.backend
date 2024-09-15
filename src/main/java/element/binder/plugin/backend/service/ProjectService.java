@@ -8,7 +8,6 @@ import element.binder.plugin.backend.web.model.request.ProjectRequestDto;
 import element.binder.plugin.backend.web.model.response.ProjectResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +20,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProjectService {
 
-    private final ProjectRepository projectRepository;
-    private final ProjectMapper mapper = ProjectMapper.INSTANCE;
-    private final MinioService minioService;
-
     private static final String PROJECT_NOT_FOUND = "Проект с ID = %s не найден";
 
-    @Transactional
-    public ProjectResponseDto create(ProjectRequestDto request) {
-        checkProjectName(request.name());
+    private final UserService userService;
+    private final MinioService minioService;
+    private final ProjectRepository projectRepository;
 
-        var project = projectRepository.save(mapper.projectRequestDtoToProject(request));
+    private final ProjectMapper mapper = ProjectMapper.INSTANCE;
+
+    @Transactional
+    public ProjectResponseDto create(UUID id, ProjectRequestDto request) {
+        checkProjectName(request.name());
+        var user = userService.getUserById(id);
+
+        var project = projectRepository.save(mapper.mapToProject(request));
+        user.addProject(project);
+
+        userService.saveUser(user);
+
         log.debug("Создан проект с ID = {}", project.getId());
 
         return mapper.projectToProjectResponseDto(project);
@@ -71,14 +77,14 @@ public class ProjectService {
         return id;
     }
 
-    public List<ProjectResponseDto> getAll(DataTablesInput request) {
-        var projects = projectRepository.findAll(request);
-        if (projects.getData().isEmpty()) {
-            log.warn("Таблица проектов пуста");
-        } else {
-            log.debug("Получение всех проектов. Количество записей = {}", projects.getRecordsFiltered());
-        }
-        return projects.getData().stream()
+    public List<ProjectResponseDto> getUserProjects(UUID id) {
+        var user = userService.getUserById(id);
+
+        var projects = projectRepository.findAllByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Не найдены проекты"
+                        + " для пользователя с ID = %s", user.getId())));
+
+        return projects.stream()
                 .map(mapper::projectToProjectResponseDto)
                 .collect(Collectors.toList());
     }

@@ -8,13 +8,11 @@ import element.binder.plugin.backend.web.model.request.InnerProjectRequestDto;
 import element.binder.plugin.backend.web.model.response.InnerProjectResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -77,19 +75,6 @@ public class InnerProjectService {
         minioService.deleteFolder(bucketName, folderPath);
         log.debug("Удален внутренний проект с ID = {}", innerProject.getId());
         return id;
-    }
-
-    public List<InnerProjectResponseDto> getAll(DataTablesInput request) {
-        var innerProjects = innerProjectRepository.findAll(request);
-        if (innerProjects.getData().isEmpty()) {
-            log.warn("Таблица внутренних проектов пуста");
-        } else {
-            log.debug("Получение всех внутренних проектов. Количество записей = {}",
-                    innerProjects.getRecordsFiltered());
-        }
-        return innerProjects.getData().stream()
-                .map(innerProjectMapper::innerProjectToInnerProjectResponseDto)
-                .collect(Collectors.toList());
     }
 
     public List<InnerProjectResponseDto> getAllByProjectId(UUID projectId) {

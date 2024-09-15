@@ -16,8 +16,9 @@ public interface ProjectMapper {
     ProjectResponseDto projectToProjectResponseDto(Project project);
 
     @Mapping(target = "id", ignore = true)
+
     @Mapping(target = "innerProjects", ignore = true)
-    Project projectRequestDtoToProject(ProjectRequestDto requestDto);
+    Project mapToProject(ProjectRequestDto requestDto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "innerProjects", ignore = true)
