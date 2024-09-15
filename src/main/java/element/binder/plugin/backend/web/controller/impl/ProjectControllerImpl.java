@@ -9,6 +9,7 @@ import element.binder.plugin.backend.web.model.response.InnerProjectResponseDto;
 import element.binder.plugin.backend.web.model.response.ProjectResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -60,5 +63,19 @@ public class ProjectControllerImpl implements ProjectController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<InnerProjectResponseDto>> getAllInnerProjectsByProject(@PathVariable UUID id) {
         return ResponseEntity.ok(innerProjectService.getAllByProjectId(id));
+    }
+
+    @PostMapping(path = "/{id}/picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<String> addProjectPicture(@PathVariable UUID id,
+                                                    @RequestParam("images") MultipartFile[] images) {
+        return ResponseEntity.ok(projectService.addProjectPicture(id, images));
+    }
+
+    @DeleteMapping("/{id}/picture")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<String> removeProjectPicture(@PathVariable UUID id,
+                                                       @RequestParam("fileUrl") String imageUrl) {
+        return ResponseEntity.ok(projectService.removeProjectPicture(id, imageUrl));
     }
 }

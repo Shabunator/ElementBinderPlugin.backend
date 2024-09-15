@@ -1,7 +1,9 @@
 package element.binder.plugin.backend.entity;
 
+import element.binder.plugin.backend.converter.JsonStringListConverter;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,6 +42,10 @@ public class Project {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "images_url", columnDefinition = "jsonb")
+    @Convert(converter = JsonStringListConverter.class)
+    private List<String> imagesUrl;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

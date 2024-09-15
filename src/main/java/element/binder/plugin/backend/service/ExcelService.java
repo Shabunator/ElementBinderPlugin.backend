@@ -32,7 +32,7 @@ public class ExcelService {
 
             // Создаем строку заголовков
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"Изображение", "Название", "Артикул", "Размер", "Материал", "Цена", "Внутренний проект"};
+            String[] headers = {"Изображения", "Название", "Артикул", "Размер", "Материал", "Цена", "Внутренний проект"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -44,7 +44,14 @@ public class ExcelService {
             for (Element element : elements) {
                 Row row = sheet.createRow(rowNum++);
 
-                row.createCell(0).setCellValue(element.getMinioUrl() != null ? element.getMinioUrl() : "");
+                var imagesUrl = element.getImagesUrl();
+                if (imagesUrl != null && !imagesUrl.isEmpty()) {
+                    String joinedUrls = String.join(", ", imagesUrl);
+                    row.createCell(0).setCellValue(joinedUrls);
+                } else {
+                    row.createCell(0).setCellValue("");
+                }
+
                 row.createCell(1).setCellValue(element.getName() != null ? element.getName() : "");
                 row.createCell(2).setCellValue(element.getArticle() != null ? element.getArticle() : "");
                 row.createCell(3).setCellValue(element.getSize() != null ? element.getSize() : "");

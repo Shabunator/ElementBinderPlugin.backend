@@ -14,7 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "PluginControllerApi", description = "API для регистрации и авторизации")
+@Tag(name = "AuthControllerApi", description = "API для регистрации и авторизации")
 public interface AuthController {
 
     @Operation(summary = "Авторизация пользователя")

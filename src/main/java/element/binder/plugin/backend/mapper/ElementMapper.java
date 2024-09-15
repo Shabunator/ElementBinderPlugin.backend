@@ -25,7 +25,7 @@ public interface ElementMapper {
     ElementResponse elementToElementResponse(Element element);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "minioUrl", source = "fileUrls", qualifiedByName = "mapFileUrls")
+    @Mapping(target = "imagesUrl", source = "fileUrls")
     @Mapping(target = "name", source = "request.name")
     @Mapping(target = "article", source = "request.article")
     @Mapping(target = "size", source = "request.size")
@@ -38,10 +38,5 @@ public interface ElementMapper {
     @Named("mapInnerProject")
     default InnerProject map(UUID innerProjectId, @Context InnerProjectService innerProjectService) {
         return innerProjectService.findProjectById(innerProjectId);
-    }
-
-    @Named("mapFileUrls")
-    default String map(List<String> fileUrls) {
-        return fileUrls.getFirst();
     }
 }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,8 +35,9 @@ public class ProjectService {
         var user = userService.getUserById(id);
 
         var project = projectRepository.save(mapper.mapToProject(request));
-        user.addProject(project);
 
+        // Добавление пользователю проекта и закрепление его за ним
+        user.addProject(project);
         userService.saveUser(user);
 
         log.debug("Создан проект с ID = {}", project.getId());
@@ -87,6 +89,31 @@ public class ProjectService {
         return projects.stream()
                 .map(mapper::projectToProjectResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public String addProjectPicture(UUID id, MultipartFile[] images) {
+        var project = findProjectById(id);
+        var folderPath = project.getName();
+        var fileUrls = minioService.uploadFile(images, folderPath);
+
+        project.setImagesUrl(fileUrls);
+        projectRepository.save(project);
+
+        return "Изображения загружены";
+    }
+
+    @Transactional
+    public String removeProjectPicture(UUID id, String imageUrl) {
+        var project = findProjectById(id);
+
+        var imageUrls = project.getImagesUrl();
+        imageUrls.remove(imageUrl);
+        project.setImagesUrl(imageUrls);
+        projectRepository.save(project);
+
+        minioService.deletePictureFromProject(imageUrl);
+        return "Изображение удалено";
     }
 
     public ProjectResponseDto getProject(UUID projectId) {

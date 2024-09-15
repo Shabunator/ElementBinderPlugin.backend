@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: updateTables
+      author: Evgenii_Shabunin
+      changes:
+        - addColumn:
+            tableName: projects
+            columns:
+              - column:
+                  name: images_url
+                  type: jsonb
+
+        - modifyDataType:
+            tableName: elements
+            columnName: minio_url
+            newDataType: jsonb
+
+        - renameColumn:
+            tableName: elements
+            oldColumnName: minio_url
+            newColumnName: images_url

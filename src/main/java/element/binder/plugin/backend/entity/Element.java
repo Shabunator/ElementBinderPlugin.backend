@@ -1,8 +1,10 @@
 package element.binder.plugin.backend.entity;
 
 import element.binder.plugin.backend.configuration.ApplicationContextProvider;
+import element.binder.plugin.backend.converter.JsonStringListConverter;
 import element.binder.plugin.backend.service.MinioService;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,6 +17,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -32,8 +35,9 @@ public class Element {
     @JoinColumn(name = "inner_project_id", nullable = false)
     private InnerProject innerProject;
 
-    @Column(name = "minio_url")
-    private String minioUrl;
+    @Column(name = "images_url", columnDefinition = "jsonb")
+    @Convert(converter = JsonStringListConverter.class)
+    private List<String> imagesUrl;
 
     @Column(name = "name")
     private String name;
@@ -61,12 +65,11 @@ public class Element {
     @PreRemove
     public void preRemove() {
         MinioService minioService = ApplicationContextProvider.getBean(MinioService.class);
-        String bucketName = minioService.checkBucket();
         String projectName = innerProject.getProject().getName();
         String innerProjectFolderName = innerProject.getName();
         String folderPath = projectName + "/" + innerProjectFolderName;
-        String fileName = folderPath + "/" + name;
-        minioService.deleteFile(bucketName, fileName);
+        String pathToFile = folderPath + "/" + name;
+        minioService.deleteFile(pathToFile);
     }
 
     @Override

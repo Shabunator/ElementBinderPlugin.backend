@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,17 +124,46 @@ public class MinioService {
     /**
      * Метод для удаления файла из бакета Minio
      *
-     * @param bucketName имя бакета
-     * @param fileName имя удаляемого файла
+     * @param pathToFile путь к удаляемому файлу
      */
     @SneakyThrows
-    public void deleteFile(String bucketName, String fileName) {
+    public void deleteFile(String pathToFile) {
+        var bucketName = checkBucket();
         minioClient.removeObject(
                 RemoveObjectArgs.builder()
                         .bucket(bucketName)
-                        .object(fileName)
+                        .object(pathToFile)
                         .build());
-        log.info("Файл {} удален из бакета {}", fileName, bucketName);
+        log.info("Файл удален из бакета {}", bucketName);
+    }
+
+    /**
+     * Метод для удаления заглавного изображения проекта из бакета Minio по ссылке
+     *
+     * @param fileUrl ссылка на удаляемый файл
+     */
+    @SneakyThrows
+    public void deletePictureFromProject(String fileUrl) {
+        var uri = new URI(fileUrl);
+        var path = uri.getPath();
+
+        // Удаляем начальный слэш и разбиваем путь на части
+        String[] parts = path.substring(1).split("/");
+
+        // Извлекаем имя бакета и объектный путь
+        String bucketName = parts[0]; // Имя бакета
+        String projectName = parts[1]; // Путь к объекту внутри бакета
+        String projectPictureName = parts[2]; // Имя объекта
+
+
+        // Удаляем объект из Minio
+        minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(projectPictureName)
+                        .build());
+
+        log.info("Файл {} удален из бакета {}", projectPictureName, bucketName);
     }
 
     /**
